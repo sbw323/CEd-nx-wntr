@@ -33,7 +33,6 @@ d3pos_dict = defaultdict(list)
 for d in (pos_dict0, nodepressure_dict0): # you can list as many input dicts as you want here
     for key, value in d.items():
         d3pos_dict[key].append(value)
-
 d3pos_dict0 = dict(d3pos_dict)
 
 node_list = list(nodesdf0.NAME)
@@ -49,32 +48,9 @@ for i, label in enumerate(pipesdf0['NAME']):
     name = pipesdf0['NAME'].iloc[i]
     G.add_edge(psource, pdest, p = pressure, n = name)
 
-n_data = list(G.nodes(data=True))
-p_data = list(G.edges(data=True))
-
-nodeinfo = nx.get_node_attributes(G, 'pressure')
-nodeinfo[cntrlnd]
-
-fig_size = plt.rcParams["figure.figsize"]
-fig_size[0] = 30
-fig_size[1] = 30
-plt.rcParams["figure.figsize"] = fig_size
-print("Current size:", fig_size)
-
-labels = {}
-labels[cntrlnd] = r'$\delta$'
-
-nodes = G.nodes()
-ec = nx.draw_networkx_edges(G, pos = pos_dict0, alpha=1)
-nc = nx.draw_networkx_nodes(G, pos = pos_dict0, nodelist=nodes, node_color=nodesdf0['NodePressure'], with_labels=False, node_size=25, cmap=plt.cm.jet)
-lc = nx.draw_networkx_labels(G, pos = pos_dict0, labels = labels, font_size=32, font_color='r')
-
-plt.colorbar(nc)
-plt.axis('off')
-#plt.savefig("/Users/aya/Documents/code-pfs/gas-nx/plots/ZeroDegrees.png")
-plt.show()
-
 def network_plot_3D(G, angle, save=False):
+    colors = [plt.cm.jet(G.degree(i)/edge_max) for i in range(n)]
+
     # 3D network plot
     with plt.style.context(('ggplot')):
 
@@ -112,4 +88,4 @@ def network_plot_3D(G, angle, save=False):
 
     return
 
-network_plot_3D(G, 90)
+network_plot_3D(G, 60)
