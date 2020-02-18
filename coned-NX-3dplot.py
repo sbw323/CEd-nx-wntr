@@ -1,3 +1,7 @@
+##############
+#refer to https://www.idtools.com.au/3d-network-graphs-python-mplot3d-toolkit/
+##############
+
 import numpy as np
 import networkx as nx
 import pandas as pd
