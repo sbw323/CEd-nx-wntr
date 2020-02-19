@@ -15,11 +15,6 @@ def generate_random_3Dgraph(n_nodes, radius, seed=None):
     G = nx.random_geometric_graph(n_nodes, radius, pos=pos)
     return G
 
-n = G.number_of_nodes()
-edge_max = max([G.degree(i) for i in range(n)])
-colors = [plt.cm.plasma(G.degree(i)/edge_max) for i in range(n)]
-colors
-
 def network_plot_3D(G, angle, save=False):
     # Get node positions
     pos = nx.get_node_attributes(G, 'pos')
@@ -44,7 +39,6 @@ def network_plot_3D(G, angle, save=False):
 
             # Scatter plot
             ax.scatter(xi, yi, zi, c=colors[key], s=20+20*G.degree(key), edgecolors='k', alpha=0.7)
-            print(c)
 
         # Loop on the list of edges to get the x,y,z, coordinates of the connected nodes
         # Those two points are the extrema of the line to be plotted
@@ -68,7 +62,7 @@ def network_plot_3D(G, angle, save=False):
 
     return
 
-G = generate_random_3Dgraph(10, 5)
+G = generate_random_3Dgraph(100, 5)
 
 
 network_plot_3D(G, 90)
