@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import pandas as pd
 from pandas import DataFrame as df
 import numpy as np
@@ -14,32 +8,16 @@ import networkx as nx
 from collections import defaultdict
 import tensorflow as tf
 
-
-# In[2]:
-
-
-anomalyFree = "/Users/kavyaub/Documents/mySubjects/ConEdison/NYU_LeakData/LeakData_ZeroDegrees/NYU Anamoly Data_ZeroDeg_Pipes.csv"
+anomalyFree = "/Users/aya/Documents/code-pfs/gas-nx/NYU_LeakData/LeakData_ZeroDegrees/NYU Anamoly Data_ZeroDeg_Pipes.csv"
 nFile0=pd.read_csv(anomalyFree)
 
-
-# In[3]:
-
-
-anomaly = "/Users/kavyaub/Documents/mySubjects/ConEdison/NYU_LeakData/LeakData_ZeroDegrees/NYU Anamoly Data_ZeroDeg_Pipes_Leak1.csv"
+anomaly = "/Users/aya/Documents/code-pfs/gas-nx/NYU_LeakData/LeakData_ZeroDegrees/NYU Anamoly Data_ZeroDeg_Pipes_Leak1.csv"
 nFile1=pd.read_csv(anomaly)
 
-
-# In[4]:
-
-
 def get_file(name):
-    anomaly = "/Users/kavyaub/Documents/mySubjects/ConEdison/NYU_LeakData"+name
+    anomaly = "/Users/aya/Documents/code-pfs/gas-nx/NYU_LeakData/"+name
     nFile=pd.read_csv(anomaly)
     return nFile
-
-
-# In[5]:
-
 
 def flowDeviation(file0, file1):
     res_arr = file1
@@ -47,9 +25,13 @@ def flowDeviation(file0, file1):
     res_arr.FlowDeviation = abs(res_arr.FacilityFlowAbsolute.subtract(file0.FacilityFlowAbsolute))/file0.FacilityFlowAbsolute
     return res_arr
 
-
-# In[6]:
-
+def flowDeviationNormalized(res_arr):
+    norm_arr = res_arr
+    norm_arr['NormalizedDeviation']= norm_arr.FlowDeviation
+    lower = min(norm_arr.FlowDeviation)
+    upper = max(norm_arr.FlowDeviation)
+    norm_arr.FlowDeviation = ((norm_arr.FlowDeviation-lower)/(upper-lower))
+    return norm_arr
 
 preDir = "/LeakData_ZeroDegrees/"
 name0_11="NYU Anamoly Data_ZeroDeg_Pipes_Leak11.csv"
@@ -62,19 +44,11 @@ leak0_21 = get_file(preDir+name0_21)
 leak0_31 = get_file(preDir+name0_31)
 leak0_41 = get_file(preDir+name0_41)
 
-
-# In[7]:
-
-
 res0_1 = flowDeviation(nFile0,nFile1)
 res0_11 = flowDeviation(nFile0,leak0_11)
 res0_21 = flowDeviation(nFile0,leak0_21)
 res0_31 = flowDeviation(nFile0,leak0_31)
 res0_41 = flowDeviation(nFile0,leak0_41)
-
-
-# In[8]:
-
 
 res0_1 = res0_1.fillna(value=0.0)
 res0_11 = res0_11.fillna(value=0.0)
@@ -82,9 +56,11 @@ res0_21 = res0_21.fillna(value=0.0)
 res0_31 = res0_31.fillna(value=0.0)
 res0_41 = res0_41.fillna(value=0.0)
 
-
-# In[87]:
-
+fig_size = plt.rcParams["figure.figsize"]
+fig_size[0] = 30
+fig_size[1] = 30
+plt.rcParams["figure.figsize"] = fig_size
+print("Current size:", fig_size)
 
 def draw_graph(nodeArr,preshArr):
     cntrlnd = '0BEC50B8'
@@ -97,59 +73,43 @@ def draw_graph(nodeArr,preshArr):
         pos_dict[i].append(k)
     pos_dict0 = dict(pos_dict)
 
-    #nodepressure_dict0 = {val:item for val, item in zip(nodeArr.NAME,nodeArr.FlowDeviation)}
-
-    #node_list = list(nodeArr.NAME)
     edge_list = list(preshArr.NAME)
     G.add_nodes_from(pos_dict0.keys())
-    #for n in node_list:
-    #    G.nodes[n]['pos'] = pos_dict0[n]
-    #    G.nodes[n]['flow'] = nodepressure_dict0[n]
 
     for i, label in enumerate(preshArr['NAME']):
         pdest = preshArr['FacilityToNodeName'].iloc[i]
         psource = preshArr['FacilityFromNodeName'].iloc[i]
-        flow = preshArr['FlowDeviation'].iloc[i]
+        flow = preshArr['NormalizedDeviation'].iloc[i]
         name = preshArr['NAME'].iloc[i]
         G.add_edge(psource, pdest, p = flow, n = name)
 
     n_data = list(G.nodes(data=True))
     p_data = list(G.edges(data=True))
 
-    #nodeinfo = nx.get_node_attributes(G, 'pressure')
     edgeinfo = nx.get_edge_attributes(G, 'flow')
-    #nodeinfo[cntrlnd]
-
-    fig_size = plt.rcParams["figure.figsize"]
-    fig_size[0] = 30
-    fig_size[1] = 30
-    plt.rcParams["figure.figsize"] = fig_size
-    print("Current size:", fig_size)
 
     labels = {}
     labels[cntrlnd] = r'$\delta$'
 
     nodes = G.nodes()
     edges = G.edges()
-    lower = min(preshArr.FlowDeviation)
-    upper = max(preshArr.FlowDeviation)
-    colors = plt.cm.jet((preshArr.FlowDeviation-lower)/(upper-lower))
-    #colors=range(round(upper))
-    
-    #edges = nx.draw_networkx_edges(G,pos,edge_color=colors,width=4,
-    #                           edge_cmap=plt.cm.Blues)
-    ec = nx.draw_networkx_edges(G, pos = pos_dict0, edge_color=colors,width=4, with_labels=False,cmap = plt.cm.jet,vmin=lower,vmax=upper)
-    nc = nx.draw_networkx_nodes(G, pos = pos_dict0, alpha=1,node_size=25)
+    lower = min(norm_41.FlowDeviation)
+    upper = max(norm_41.FlowDeviation)
+    colors = plt.cm.jet(norm_41['FlowDeviation'])
+
+    ec = nx.draw_networkx_edges(G, pos = pos_dict0, colors = norm_41['FlowDeviation'], width=4, cmap=plt.cm.Blues, with_labels=False, edge_vmin=lower, edge_vmax=upper)
+    nc = nx.draw_networkx_nodes(G, pos = pos_dict0, alpha=1, node_size=25)
     lc = nx.draw_networkx_labels(G, pos = pos_dict0, labels = labels, font_size=32, font_color='r')
-    
+
     plt.colorbar(ec)
     plt.axis('off')
     #plt.savefig("/Users/kavyaub/Documents/mySubjects/ConEdison/screenshots/press5.png")
     plt.show()
 
-
-# In[91]:
-
+anomalyFreeNode = "/Users/aya/Documents/code-pfs/gas-nx/NYU_LeakData/LeakData_ZeroDegrees/NYU Anamoly Data_ZeroDeg_Nodes.csv"
+norm_41 = flowDeviationNormalized(res0_41)
+nodeArr=pd.read_csv(anomalyFreeNode)
+draw_graph(nodeArr,res0_41)
 
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -169,7 +129,7 @@ def draw_3d(nodeArr,preshArr):
     edgeflow_dict0 = {val:item for val, item in zip(preshArr.NAME, preshArr.FlowDeviation)}
 
     d3pos_dict = defaultdict(list)
-    
+
     for d in (pos_dict0, edgeflow_dict0): # you can list as many input dicts as you want here
         for key, value in d.items():
             d3pos_dict[key].append(value)
@@ -190,7 +150,7 @@ def draw_3d(nodeArr,preshArr):
         G.add_edge(psource, pdest, p = flow, n = name)
 
     def network_plot_3D(G, angle, save=True):
-        
+
         lower = min(preshArr['FlowDeviation'])
         upper = max(preshArr['FlowDeviation'])
         colors = plt.cm.jet((preshArr.FlowDeviation-lower)/(upper-lower))
@@ -244,87 +204,29 @@ def draw_3d(nodeArr,preshArr):
 
     network_plot_3D(G, 60)
 
-
-# In[11]:
-
-
 max(res0_1.FlowDeviation)
-
-
-# In[12]:
-
 
 max(res0_11.FlowDeviation)
 
-
-# In[13]:
-
-
 max(res0_21.FlowDeviation)
-
-
-# In[14]:
-
 
 max(res0_31.FlowDeviation)
 
-
-# In[15]:
-
-
 max(res0_41.FlowDeviation)
-
-
-# In[16]:
-
-
-res0_1.to_csv(r'/Users/kavyaub/Documents/mySubjects/ConEdison/screenshots/pipes1.csv')
-res0_11.to_csv(r'/Users/kavyaub/Documents/mySubjects/ConEdison/screenshots/pipes11.csv')
-res0_21.to_csv(r'/Users/kavyaub/Documents/mySubjects/ConEdison/screenshots/pipes21.csv')
-res0_31.to_csv(r'/Users/kavyaub/Documents/mySubjects/ConEdison/screenshots/pipes31.csv')
-res0_41.to_csv(r'/Users/kavyaub/Documents/mySubjects/ConEdison/screenshots/pipes41.csv')
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[17]:
-
 
 from sklearn import svm
 svc = svm.SVC(probability=False,  kernel="linear", C=2.8, gamma=.0073,verbose=10)
-
-
-# In[18]:
-
 
 res0_1["leak"] = 0
 for row in res0_1.itertuples():
     if row.FlowDeviation > 40:
         row["leak"] = 1
 
-
-# In[19]:
-
-
 res0_1['leak'] = np.where(res0_1['FlowDeviation']>=40, 1, 0)
 res0_11['leak'] = np.where(res0_11['FlowDeviation']>=40, 1, 0)
 res0_21['leak'] = np.where(res0_21['FlowDeviation']>=40, 1, 0)
 res0_31['leak'] = np.where(res0_31['FlowDeviation']>=40, 1, 0)
 res0_41['leak'] = np.where(res0_41['FlowDeviation']>=40, 1, 0)
-
-
-# In[20]:
-
 
 leakTable=pd.DataFrame(columns=['leak1','leak2','leak3','leak4','leak5'])
 leakTable['leak1']=res0_1['leak']
@@ -334,22 +236,10 @@ leakTable['leak4']=res0_31['leak']
 leakTable['leak5']=res0_41['leak']
 leakTable['sumLeaks']=leakTable.leak1+leakTable.leak2+leakTable.leak3+leakTable.leak4+leakTable.leak5
 
-
-# In[21]:
-
-
 arr=range(res0_1.FlowDeviation.size)
 plt.plot(arr,leakTable.sumLeaks)
 
-
-# In[22]:
-
-
 leakTable.sumLeaks.value_counts()
-
-
-# In[23]:
-
 
 def hightlightColor(r):
     if r['sumLeaks']>3:
@@ -363,23 +253,7 @@ def hightlightColor(r):
     else:
         return ['background-color: blue']*6
 
-
-# In[24]:
-
-
 leakTable.style.apply(hightlightColor, axis=1)
-
-
-# In[88]:
-
-
-anomalyFreeNode = "/Users/kavyaub/Documents/mySubjects/ConEdison/NYU_LeakData/LeakData_ZeroDegrees/NYU Anamoly Data_ZeroDeg_Nodes.csv"
-nodeArr=pd.read_csv(anomalyFreeNode)
-draw_graph(nodeArr,res0_41)
-
-
-# In[76]:
-
 
 anomalyFreeNode = "/Users/kavyaub/Documents/mySubjects/ConEdison/NYU_LeakData/LeakData_ZeroDegrees/NYU Anamoly Data_ZeroDeg_Nodes.csv"
 nodeArr=pd.read_csv(anomalyFreeNode)
@@ -396,15 +270,7 @@ for row in res0_41.iterrows():
         row[1]["FacilityFromNodeNameXCoord"]=row1['NodeXCoordinate']
         row[1]["FacilityFromNodeNameYCoord"]=row1['NodeYCoordinate']
 
-
-# In[75]:
-
-
 max(res0_41["FacilityFromNodeNameXCoord"])
-
-
-# In[43]:
-
 
 final_res0_41 = np.array([res0_41['NAME'],res0_41['FacilityFromNodeName'],res0_41['FacilityToNodeName'],res0_41['FlowDeviation'],[0]*res0_41.NAME.size,[0]*res0_41.NAME.size,[0]*res0_41.NAME.size,[0]*res0_41.NAME.size])
 
@@ -422,10 +288,6 @@ for i in range(0,final_res0_41[1].size):
         final_res0_41[6][i]=temp.iloc[0][3]
         final_res0_41[7][i]=temp.iloc[0][2]
 
-
-# In[90]:
-
-
 #final_res0_41['NAME']=res0_41['NAME']
 #final_res0_41['FacilityFromNodeName']=res0_41['FacilityFromNodeName']
 #final_res0_41['FacilityToNodeName']=res0_41['FacilityToNodeName']
@@ -435,10 +297,6 @@ for i in range(0,final_res0_41[1].size):
 #final_res0_41['FacilityToNodeNameXCoord']=0.0
 #final_res0_41['FacilityToNodeNameYCoord']=0.0
 draw_3d(nodeArr,res0_41)
-
-
-# In[67]:
-
 
 def draw_graph_np(graphArr):
     cntrlnd = '0BEC50B8'
@@ -489,7 +347,7 @@ def draw_graph_np(graphArr):
     upper = max(graphArr[3])
     #colors = plt.cm.jet((graphArr[3]-lower)/(upper-lower))
     #colors=range(round(upper))
-    
+
     #edges = nx.draw_networkx_edges(G,pos,edge_color=colors,width=4,
     #                           edge_cmap=plt.cm.Blues)
     #print(nodeArr.shape)
@@ -498,21 +356,10 @@ def draw_graph_np(graphArr):
     ec = nx.draw_networkx_edges(G, pos = pos_dict0, edge_color=graphArr[3], with_labels=False,cmap = plt.cm.jet)
     nc = nx.draw_networkx_nodes(G, pos = pos_dict0, alpha=1)
     lc = nx.draw_networkx_labels(G, pos = pos_dict0, labels = labels, font_size=32, font_color='r')
-    
+
     plt.colorbar(ec)
     plt.axis('off')
     #plt.savefig("/Users/kavyaub/Documents/mySubjects/ConEdison/screenshots/press5.png")
     plt.show()
 
-
-# In[68]:
-
-
 draw_graph_np(final_res0_41)
-
-
-# In[ ]:
-
-
-
-
