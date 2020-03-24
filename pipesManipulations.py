@@ -489,32 +489,12 @@ def draw_2d(graphArr):
 
 draw_3d(res0_41)
 
-
-# In[48]:
-
-
 draw_3d(res0_31)
-
-
-# In[62]:
-
 
 draw_3d(res50_41)
 
-
-# In[68]:
-
-
 draw_2d(res0_41)
 
-
-# In[73]:
-
-
 draw_2d(res50_41)
-
-
-# In[78]:
-
 
 draw_3d(res50_41)
