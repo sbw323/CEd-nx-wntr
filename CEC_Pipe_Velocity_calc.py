@@ -17,11 +17,11 @@ import math
 ## Just toggle to MD w/hashes after ##
 ######################################
 
-KB_toplevelpath = 0
-KB_datadir = 0
+#KB_toplevelpath = 0
+#KB_datadir = 0
 
-#SBW_toplevelpath = "/Users/aya/Documents/code-pfs/gas-nx"
-#SBW_datadir = "/NYU_LeakData"
+SBW_toplevelpath = "/Users/aya/Documents/code-pfs/gas-nx"
+SBW_datadir = "/NYU_LeakData"
 
 def ask_user_path(toplevelpath, datadir):
     ask_user_path_text = 'FilePath for Data is: ' + toplevelpath + datadir + ' OK? y / n'
@@ -62,7 +62,6 @@ pid = leak0_41['NAME'].iloc[0]
 pffa = leak0_41['FacilityFlowAbsolute'].iloc[0]
 pdia = leak0_41['PipeDiameter'].iloc[0]
 print(pid, "has a diameter in inches of:", pdia, "and a flow rate of:", pffa, "in mcfph")
-in2_ft2 = 0.0005787
 
 parea = pdia**2/4*math.pi*in2_ft2
 print(pid, "has an area of:", parea, "in ft^2")
@@ -79,12 +78,14 @@ if leak0_41['PipeDiameter'].iloc[0] == leak0_41.iloc[0][94]:
     print("pipe diameter is row 94")
 if leak0_41['FacilityFlowAbsolute'].iloc[0] == leak0_41.iloc[0][90]:
     print("pipe flow is row 90")
+in2_ft2 = 0.0005787
 
 ## Leak 41 ##
 #Defintion creates an array of the node information with an appended Zeros matrix#
 
 def pipe_velocity_calc(pipedf):
     final_pipedf = np.array([pipedf['NAME'],pipedf['FacilityFromNodeName'],pipedf['FacilityToNodeName'],pipedf['FacilityFlowAbsolute'],pipedf['PipeDiameter'],[0]*pipedf.NAME.size,[0]*pipedf.NAME.size,[0]*pipedf.NAME.size,[0]*pipedf.NAME.size,[0]*pipedf.NAME.size,[0]*pipedf.NAME.size])
+    setOfNames = set(pipedf['NAME'])
 
     for i in range(0,final_pipedf[1].size):
         if final_pipedf[0][i] in setOfNames:
@@ -102,7 +103,20 @@ def pipe_velocity_calc(pipedf):
 
     return pipedf
 
+final_leak0_11 = pipe_velocity_calc(leak0_11)
+final_leak0_21 = pipe_velocity_calc(leak0_21)
+final_leak0_31 = pipe_velocity_calc(leak0_31)
 final_leak0_41 = pipe_velocity_calc(leak0_41)
 
 if final_leak0_41['VELOpipeFPS'].iloc[0] == pvelo:
     print("validated")
+veloarray11 = np.array(final_leak0_11['VELOpipeFPS'])
+veloarray21 = np.array(final_leak0_21['VELOpipeFPS'])
+veloarray31 = np.array(final_leak0_31['VELOpipeFPS'])
+veloarray41 = np.array(final_leak0_41['VELOpipeFPS'])
+print(np.mean(veloarray11),np.std(veloarray11))
+print(np.mean(veloarray21),np.std(veloarray21))
+print(np.mean(veloarray31),np.std(veloarray31))
+print(np.mean(veloarray41),np.std(veloarray41))
+
+print(362*10**6*0.014/10**6*0.5)
