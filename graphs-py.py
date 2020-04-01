@@ -417,7 +417,7 @@ def draw_graph(graphArr):
     ec = nx.draw_networkx_edges(G, pos = pos_dict0, alpha=1)
     nc = nx.draw_networkx_nodes(G, pos = pos_dict0, nodelist=nodes, node_color=graphArr['PressureDeviation'], with_labels=False, node_size=25, cmap=plt.cm.jet, vmin=0.0, vmax=0.3)
     lc = nx.draw_networkx_labels(G, pos = pos_dict0, labels = labels, font_size=32, font_color='r')
-    
+
     plt.colorbar(nc)
     plt.axis('off')
     plt.savefig("/Users/kavyaub/Documents/mySubjects/ConEdison/screenshots/press5.png")
@@ -514,7 +514,7 @@ def draw_3d(graphArr):
         G.add_edge(psource, pdest, p = pressure, n = name)
 
     def network_plot_3D(G, angle, save=True):
-        
+
         lower = 0.0
         upper = 0.3
         colors = plt.cm.jet((graphArr.PressureDeviation-lower)/(upper-lower))
@@ -707,7 +707,3 @@ res0_41.to_csv(r'/Users/kavyaub/Documents/mySubjects/ConEdison/screenshots/data.
 
 
 # In[ ]:
-
-
-
-

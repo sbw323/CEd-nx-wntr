@@ -49,7 +49,7 @@ for i, label in enumerate(pipesdf0['NAME']):
     G.add_edge(psource, pdest, p = pressure, n = name)
 
 def network_plot_3D(G, angle, save=False):
-    colors = [plt.cm.jet(G.degree(i)/edge_max) for i in range(n)]
+    colors = ["#1a1aff", "#00cc00", "#ffff00", "#ffa500", "#ff4d4d"]
 
     # 3D network plot
     with plt.style.context(('ggplot')):
