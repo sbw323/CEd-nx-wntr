@@ -1,55 +1,55 @@
 %Load Data
-%load anomaly_free_pipes.txt %AnomalyFree
-load latestflow_5.txt %training
-%load combined_validation.txt %validation
+load latestpressure.txt %training
 
 % load Anomaly free data
 %an_free=anomaly_free_pipes(:,:); 
 
 % load Training Data
-X = abs(latestflow_5(:,1)); 
-X_flow= X(:,1);
+X = abs(latestpressure(:,1)); 
+X_pressure= X(:,1);
 
 % Set Threshold 
-flow=abs(latestflow_5(:,1)); %Threshold flow all rows, column 2
+%pressure=abs(latestpressure_5(:,1)); %Threshold pressure all rows, column 2
 
-%flowD=abs(an_free(:,1)); %Threshold flow all rows, column 2
+%pressureD=abs(an_free(:,1)); %Threshold pressure all rows, column 2
 
 % Mean & STD of Anomaly Free data
-%flowavg=mean(flowD); %Avg of Threshold for flow = Mean of  thresholdflowD
+%pressureavg=mean(pressureD); %Avg of Threshold for pressure = Mean of  thresholdpressureD
 
-%flowSTD=std(X_flow);
+%pressureSTD=std(X_pressure);
 
 % % Threshold 1
 % 
-%flowRangeP1=flowD+0.01*flowavg;
-%flowRangeN1=flowD-0.01*flowavg;
-%flowP1=flowD+5;
-%flowN1=flowD-5;
-P1=10;
+% pressureRangeP1=pressureD+0.01*pressureavg;
+% pressureRangeN1=pressureD-0.01*pressureavg;
+% pressureP1=pressureD+5;
+% pressureN1=pressureD-5;
+P0=0.3;
+P1=0.05;
+
 % 
 % % Threshold 2
 % 
-%flowRangeP2=flowD+0.025*flowavg;
-%flowRangeN2=flowD-0.025*flowavg;
-%flowP2=flowD+10;
-%flowN2=flowD-10;
-P2=20;
+% pressureRangeP2=pressureD+0.025*pressureavg;
+% pressureRangeN2=pressureD-0.025*pressureavg;
+% pressureP2=pressureD+10;
+% pressureN2=pressureD-10;
+P2=0.08;
 % 
 % % Threshold 3
 % 
-%flowRangeP3=flowD+0.055*flowavg;
-%flowRangeN3=flowD-0.055*flowavg;
-%flowP3=flowD+20;
-P3=40;
+% pressureRangeP3=pressureD+0.055*pressureavg;
+% pressureRangeN3=pressureD-0.055*pressureavg;
+% pressureP3=pressureD+20;
+P3=0.11;
 % 
 % % Threshold 4
 % 
-%flowRangeP4=flowD+0.075*flowavg;
-%flowRangeN4=flowD-0.075*flowavg;
-%flowP4=flowD+40;
-%flowN4=flowD-40;
-P4=60;
+% pressureRangeP4=pressureD+0.075*pressureavg;
+% pressureRangeN4=pressureD-0.075*pressureavg;
+% pressureP4=pressureD+40;
+% pressureN4=pressureD-40;
+P4=0.14;
 
 %
 % D5 duration index > 5 day
@@ -58,9 +58,9 @@ P4=60;
 % D2 duration index > 2 day
 % D1 duration index > 1 day
 % Severe anomaly
-for i=1:length(X_flow)
-    %A3= (X_duration>DurationRangeP3)&(X_flow>flowRangeP3);%&(thresholdHl>HLRangeP3)&(thresholdflow<flowRangeP3);
-    A3= X_flow>P4;
+for i=1:length(X_pressure)
+    %A3= (X_duration>DurationRangeP3)&(X_pressure>pressureRangeP3);%&(thresholdHl>HLRangeP3)&(thresholdpressure<pressureRangeP3);
+    A3= X_pressure<P1;
 end
 A3=A3';
 indici5=find(A3==1);
@@ -281,30 +281,30 @@ D1=indici5;
 
 % % input SVM
 % indici4= durata un'ora
-D=nonzeros(D2);
+D=nonzeros(D1);
 
 %D4=ones(length(indici),1);
-% Xs=X(D,:);
-% Xs2=latestflow_5(:,1);
-% Xsvm=[Xs; Xs2];
-% % Xsvm=Xsvm(:,1);
-% Y11=zeros(length(latestflow_5),1);
-% Y22=ones(length(Xs),1);
-% Ysvm=[Y22; Y11];
+%Xs=X(D,:);
+%Xs2=latestpressure_5(:,1);
+%Xsvm=[Xs; Xs2];
+% Xsvm=Xsvm(:,1);
+%Y11=zeros(length(latestpressure_5),1);
+%Y22=ones(length(Xs),1);
+%Ysvm=[Y22; Y11];
 
-Ysvm_new=zeros(length(latestflow_5),1);
+Ysvm_new=zeros(length(latestpressure),1);
 Ysvm_new(D)=1;
-Xsvm_new = latestflow_5(:,1);
+Xsvm_new = latestpressure(:,1);
 
 % % % input SVM
 % % Xs=X(D4,1:2);
-% % Xs2=an_free_flow(:,1:2);
+% % Xs2=an_free_pressure(:,1:2);
 % Xs=X(D4,1);
-% Xs2=an_free_flowp(:,1:2);
+% Xs2=an_free_pressurep(:,1:2);
 % Xsvm=[Xs; Xs2];
 % % Xsvm=Xsvm(:,1:2);
 % Xsvm=Xsvm(:,1);
-% Y11=zeros(length(an_free_flowp),1);
+% Y11=zeros(length(an_free_pressurep),1);
 % Y22=ones(length(Xs),1);
 % Ysvm=[Y11; Y22];
 
@@ -339,8 +339,8 @@ classLoss = kfoldLoss(CVSVMModel);
 ScoreSVMModel = fitSVMPosterior(SVMModel);
 
 ScoreTransform = CVSVMModel.ScoreTransform;
-W = latestflow_5(:,1);
-%W = abs(combined_flows(:,1:2));
+W = latestpressure(:,1);
+%W = abs(combined_pressures(:,1:2));
 %W=[Xs2;W];
 %dim=length(Xsvm);
 %W=W(1:dim,:);
@@ -352,4 +352,5 @@ Sc=nonzeros(label);
 
 table(Ysvm_new,'VariableNames',...
     {'TrueLabel'})
+
 
