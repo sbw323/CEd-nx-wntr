@@ -138,6 +138,14 @@ for ii = 1:size(anomlay1_500.NAME,1)
     fprintf(fid,'%s\n',anomlay1_500.NAME(ii,:));
 end
 fclose(fid);
+
+
+%Savinig the flows of anomaly free
+fid = fopen('Flow_anomaly_free.txt','wt');
+for ii = 1:size(anomaly_free_pipes_500.VELOpipeFPS,1)
+    fprintf(fid,'%s\n',anomaly_free_pipes_500.VELOpipeFPS(ii,:));
+end
+
 %%
 
 function pipedf = pipe_velocity_calc(pipedf,anomaly_free_pipes)

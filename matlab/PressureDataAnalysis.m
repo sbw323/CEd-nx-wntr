@@ -126,6 +126,12 @@ for ii = 1:size(anomlay1_500_nodes.NAME,1)
     fprintf(fid,'%s\n',anomlay1_500_nodes.NAME(ii,:));
 end
 
+%Savinig the pressures of anomaly free
+fid = fopen('Pressure_anomaly_free.txt','wt');
+for ii = 1:size(anomaly_free_nodes_500.NodePressure,1)
+    fprintf(fid,'%s\n',anomaly_free_nodes_500.NodePressure(ii,:));
+end
+
 function df_new=reducer(input_arr,nodes_200)
     unique_nodes=unique(nodes_200.NAME);
     temp1=find(ismember(input_arr.NAME,unique_nodes));

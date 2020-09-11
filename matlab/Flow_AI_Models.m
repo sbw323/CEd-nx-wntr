@@ -1,8 +1,19 @@
 %Load Data saved from FlowDataAnalysis.m
 load Mymatrix.txt
+
 % load Training Data
 X = abs(Mymatrix(:,1)); 
 X_flow= X(:,1);
+
+%load Anomaly Free Data
+an_free=fopen('Flow_anomaly_free.txt','r');
+anomaly_free=textscan(an_free,'%s');
+fclose(an_free);
+anomaly_free_pipes=zeros(length(anomaly_free{1,:}),1);
+for i=1:length(anomaly_free{1,:})
+    anomaly_free_pipes(i)=str2double(cell2mat(anomaly_free{1}(i)));
+end
+
 
 %%
 %Loading names of reducerd node set generated from FlowDataAnalysis.txt
@@ -26,9 +37,6 @@ P4=60;
 P=[P4,P3,P2,P1];
 
 %%
-%TODO: Add Color Coding
-%Output 2 columns of color and 25 cells
-%Consider the first row(> Threshold A4) of the matrix as E, 
 %frequency of 1 is depicted by E1, frequency 2 is E2 ...frequency 5 is E5
 %Row 2 (>Threshold A3) is depicted by D, Row 3 is C, Row 4 is B 
 %and Row 5 is A
@@ -59,7 +67,7 @@ blue_index=find(colors==1);
 
 %Highest velocity in anomaly free and P1 - 10, NVD , this number/max
 %anomaly free
-highest_an_free=max(X_flow);
+highest_an_free=max(anomaly_free_pipes);
 NVD1=P1/highest_an_free;
 NVD2=P2/highest_an_free;
 NVD3=P3/highest_an_free;
@@ -78,8 +86,7 @@ mapping_columns=containers.Map(keySet,valueSet);
 
 %Define this as per the number of nodes returned
 %from reducer function in FlowDataAnalysis.m
-%NOTE: Change this value even in calculate_acc() function
-total_nodes=205;
+total_nodes=length(names{1,:});
 %Sheet number to save SVM output
 svm_sheet=2;
 %Sheet number to save ANN output
@@ -599,14 +606,14 @@ headers={'SVM','ANN'};
 
 %Computing the accuracy for reds, oranges, yellows and greens
 %Based on predictions from ANN and SVM matching the actual values
-redsvm_acc=calculate_acc(red_actual,red_svm);
-redann_acc=calculate_acc(red_actual,red_ann);
-orangesvm_acc=calculate_acc(orange_actual,orange_svm);
-orangeann_acc=calculate_acc(orange_actual,orange_ann);
-yellowsvm_acc=calculate_acc(yellow_actual,yellow_svm);
-yellowann_acc=calculate_acc(yellow_actual,yellow_ann);
-greensvm_acc=calculate_acc(green_actual,green_svm);
-greenann_acc=calculate_acc(green_actual,green_ann);
+redsvm_acc=calculate_acc(red_actual,red_svm,total_nodes);
+redann_acc=calculate_acc(red_actual,red_ann,total_nodes);
+orangesvm_acc=calculate_acc(orange_actual,orange_svm,total_nodes);
+orangeann_acc=calculate_acc(orange_actual,orange_ann,total_nodes);
+yellowsvm_acc=calculate_acc(yellow_actual,yellow_svm,total_nodes);
+yellowann_acc=calculate_acc(yellow_actual,yellow_ann,total_nodes);
+greensvm_acc=calculate_acc(green_actual,green_svm,total_nodes);
+greenann_acc=calculate_acc(green_actual,green_ann,total_nodes);
 matching=[[redsvm_acc,orangesvm_acc,yellowsvm_acc,greensvm_acc];[redann_acc,orangeann_acc,yellowann_acc,greenann_acc]];
 
 %Writing the accuracy to result_sheet of excel
@@ -646,22 +653,25 @@ writetable(final_table,filename,'Sheet',result_sheet,'Range','B14','WriteRowName
 
 %%
 
+%Output the comparison matrix to excel
+%Place Actual next to Predicted
+%Also printing the total percentage of the different colors
 red_actual_percentage=red_actual;
-red_actual_percentage(total_nodes)=length(nonzeros(red_actual))/total_nodes;
+red_actual_percentage(total_nodes)=(length(nonzeros(red_actual))/total_nodes)*100;
 column_name='RedActual';
 A=table(red_actual_percentage,'VariableNames',...
                 {column_name});
 writetable(A,filename,'Sheet',comparison_sheet,'Range','B1');
 
 red_svm_percentage=red_svm;
-red_svm_percentage(total_nodes)=length(nonzeros(red_svm))/total_nodes;
+red_svm_percentage(total_nodes)=(length(nonzeros(red_svm))/total_nodes)*100;
 column_name='RedSVMPredicted';
 A=table(red_svm_percentage,'VariableNames',...
                 {column_name});
 writetable(A,filename,'Sheet',comparison_sheet,'Range','C1');
 
 red_ann_percentage=red_ann;
-red_ann_percentage(total_nodes)=length(nonzeros(red_ann))/total_nodes;
+red_ann_percentage(total_nodes)=(length(nonzeros(red_ann))/total_nodes)*100;
 column_name='RedANNPredicted';
 A=table(red_ann_percentage,'VariableNames',...
                 {column_name});
@@ -669,21 +679,21 @@ writetable(A,filename,'Sheet',comparison_sheet,'Range','D1');
 
 
 orange_actual_percentage=orange_actual;
-orange_actual_percentage(total_nodes)=length(nonzeros(orange_actual))/total_nodes;
+orange_actual_percentage(total_nodes)=(length(nonzeros(orange_actual))/total_nodes)*100;
 column_name='OrangeActual';
 A=table(orange_actual_percentage,'VariableNames',...
                 {column_name});
 writetable(A,filename,'Sheet',comparison_sheet,'Range','E1');
 
 orange_svm_percentage=orange_svm;
-orange_svm_percentage(total_nodes)=length(nonzeros(orange_svm))/total_nodes;
+orange_svm_percentage(total_nodes)=(length(nonzeros(orange_svm))/total_nodes)*100;
 column_name='OrangeSVMPredicted';
 A=table(orange_svm_percentage,'VariableNames',...
                 {column_name});
 writetable(A,filename,'Sheet',comparison_sheet,'Range','F1');
 
 orange_ann_percentage=orange_ann;
-orange_ann_percentage(total_nodes)=length(nonzeros(orange_ann))/total_nodes;
+orange_ann_percentage(total_nodes)=(length(nonzeros(orange_ann))/total_nodes)*100;
 column_name='OrangeANNPredicted';
 A=table(orange_ann_percentage,'VariableNames',...
                 {column_name});
@@ -691,21 +701,21 @@ writetable(A,filename,'Sheet',comparison_sheet,'Range','G1');
 
 
 yellow_actual_percentage=yellow_actual;
-yellow_actual_percentage(total_nodes)=length(nonzeros(yellow_actual))/total_nodes;
+yellow_actual_percentage(total_nodes)=(length(nonzeros(yellow_actual))/total_nodes)*100;
 column_name='YellowActual';
 A=table(yellow_actual_percentage,'VariableNames',...
                 {column_name});
 writetable(A,filename,'Sheet',comparison_sheet,'Range','H1');
 
 yellow_svm_percentage=yellow_svm;
-yellow_svm_percentage(total_nodes)=length(nonzeros(yellow_svm))/total_nodes;
+yellow_svm_percentage(total_nodes)=(length(nonzeros(yellow_svm))/total_nodes)*100;
 column_name='YellowSVMPredicted';
 A=table(yellow_svm_percentage,'VariableNames',...
                 {column_name});
 writetable(A,filename,'Sheet',comparison_sheet,'Range','I1');
 
 yellow_ann_percentage=yellow_ann;
-yellow_ann_percentage(total_nodes)=length(nonzeros(yellow_ann))/total_nodes;
+yellow_ann_percentage(total_nodes)=(length(nonzeros(yellow_ann))/total_nodes)*100;
 column_name='YellowANNPredicted';
 A=table(yellow_ann_percentage,'VariableNames',...
                 {column_name});
@@ -713,21 +723,21 @@ writetable(A,filename,'Sheet',comparison_sheet,'Range','J1');
 
 
 green_actual_percentage=green_actual;
-green_actual_percentage(total_nodes)=length(nonzeros(green_actual))/total_nodes;
+green_actual_percentage(total_nodes)=(length(nonzeros(green_actual))/total_nodes)*100;
 column_name='GreenActual';
 A=table(green_actual_percentage,'VariableNames',...
                 {column_name});
 writetable(A,filename,'Sheet',comparison_sheet,'Range','K1');
 
 green_svm_percentage=green_svm;
-green_svm_percentage(total_nodes)=length(nonzeros(green_svm))/total_nodes;
+green_svm_percentage(total_nodes)=(length(nonzeros(green_svm))/total_nodes)*100;
 column_name='GreenSVMPredicted';
 A=table(green_svm_percentage,'VariableNames',...
                 {column_name});
 writetable(A,filename,'Sheet',comparison_sheet,'Range','L1');
 
 green_ann_percentage=green_ann;
-green_ann_percentage(total_nodes)=length(nonzeros(green_ann))/total_nodes;
+green_ann_percentage(total_nodes)=(length(nonzeros(green_ann))/total_nodes)*100;
 column_name='GreenANNPredicted';
 A=table(green_ann_percentage,'VariableNames',...
                 {column_name});
@@ -736,9 +746,7 @@ writetable(A,filename,'Sheet',comparison_sheet,'Range','M1');
 
 %%
 %Computes the accuracy based on the number of matches
-function acc=calculate_acc(actual,other)
-    %Change this based on number of nodes in reduced_node_set
-    total_nodes=205;
+function acc=calculate_acc(actual,other,total_nodes)
     ctr=0;
     for i=1:length(actual)
         if actual(i)==other(i)
@@ -746,7 +754,7 @@ function acc=calculate_acc(actual,other)
         end
     end
     
-    acc=ctr/total_nodes;
+    acc=(ctr/total_nodes)*100;
 end
 
 
