@@ -364,8 +364,19 @@ for k=1:4
             SVMModel = fitcsvm(Xsvm_new,Ysvm_new);
 
             classOrder = SVMModel.ClassNames;
+            Order = unique(Ysvm_new)
 
             CVSVMModel = crossval(SVMModel);
+            
+            func = @(Xtrain,ytrain,Xtest,ytest)confusionmat(ytest,classify(Xtest,Xtrain,ytrain),'Order',Order)
+            
+            rng('default');
+            cvp = cvpartition(Ysvm_new,'Kfold',10);
+            
+            confMat = crossval(func,Xsvm_new,Ysvm_new,'Partition',cvp);
+            cvMat = reshape(sum(confMat),[],4);
+            confusionchart(cvMat,order)
+            
             classLoss = kfoldLoss(CVSVMModel);
             accuracy_metrics(q)=1-classLoss;
             q=q+1;
