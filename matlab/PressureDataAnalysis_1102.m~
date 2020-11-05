@@ -82,7 +82,7 @@ for i=1:length(temps(:,1))
             new_arr(i,2)=0;
             new_arr(i,3)=0;
             %new_arr(i,4)=0;
-%             new_arr(i,5)=new_arr(i,5)-temps(i,4);
+%           new_arr(i,5)=new_arr(i,5)-temps(i,4);
             
         else
             new_arr(i,1)=0;
@@ -115,7 +115,7 @@ end
 %Saving modified data to Mymatrix_node.txt
 %Use Mymatrix_node.txt as input for AI code
 
-fid = fopen('Mymatrix_node_thirtyonetomax.txt','wt');
+fid = fopen('Mymatrix_node_twentyonetomax.txt','wt');
 for ii = 1:size(saved,1)
     fprintf(fid,'%g\t',saved(ii,:));
     fprintf(fid,'\n');

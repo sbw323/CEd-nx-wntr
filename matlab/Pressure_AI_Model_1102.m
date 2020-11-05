@@ -1,5 +1,5 @@
 %Load Data
-load Mymatrix_node_thirtyonetomax.txt
+load Mymatrix_node_twentyonetomax.txt
 load Mymatrix_node_onetotwentyone.txt
 
 % load Training Data

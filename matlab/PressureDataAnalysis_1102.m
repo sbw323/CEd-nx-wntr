@@ -82,7 +82,7 @@ for i=1:length(temps(:,1))
             new_arr(i,2)=0;
             new_arr(i,3)=0;
             %new_arr(i,4)=0;
-%             new_arr(i,5)=new_arr(i,5)-temps(i,4);
+%           new_arr(i,5)=new_arr(i,5)-temps(i,4);
             
         else
             new_arr(i,1)=0;
@@ -101,9 +101,9 @@ end
 %Eg: saved(1,5)=Scenario 1 to scenario 5 for node 1,
 %    saved(6,10)=Scenario 1 to scenario 5 for node 2 and so on.
 
-saved = zeros(length(anomlay1_500_nodes.NAME)*5,1);
+saved = zeros(length(anomlay1_500_nodes.NAME)*3,1);
 j=1;
-for i=1:5:1020
+for i=1:3:(length(anomlay1_500_nodes.NAME)*3)
     saved(i)=new_arr(j,1);
     saved(i+1)=new_arr(j,2);
     saved(i+2)=new_arr(j,3);
@@ -115,7 +115,7 @@ end
 %Saving modified data to Mymatrix_node.txt
 %Use Mymatrix_node.txt as input for AI code
 
-fid = fopen('Mymatrix_node_thirtyonetomax.txt','wt');
+fid = fopen('Mymatrix_node_three.txt','wt');
 for ii = 1:size(saved,1)
     fprintf(fid,'%g\t',saved(ii,:));
     fprintf(fid,'\n');

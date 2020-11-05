@@ -85,22 +85,24 @@ NPD4=P4/highest_an_free;
 %from reducer function in PressureDataAnalysis.m
 total_nodes=length(names{1,:});
 %Sheet number to save SVMmax output
-svm_max_sheet=11;
+svm_max_sheet=1;
 %Sheet number to save ANNmax output
-ann_max_sheet=12;
+ann_max_sheet=2;
 %Sheet number to save SVM output
-svm_sheet=5;
+svm_sheet=3;
 %Sheet number to save ANN output
 ann_sheet=4;
 %Sheet number to save Actual data
-actual_sheet=6;
+actual_sheet=5;
 %Sheet number to save consolidated result
-result_sheet=7;
+result_sheet=6;
 %Sheet that contains the comparison between actual and predicted
-comparison_sheet=10;
+comparison_sheet=7;
 
 %Name of file to save the data to
-filename = 'finalLabels.xlsx';
+%filename = 'finalLabels.xlsx';
+filename = 'finalLabelsmax.xlsx';
+
 
 %Map of columns to excel column name
 keySet = {'A4D5','A4D4','A4D3','A4D2','A4D1','A3D5','A3D4','A3D3','A3D2','A3D1','A2D5','A2D4','A2D3','A2D2','A2D1','A1D5','A1D4','A1D3','A1D2','A1D1','Red','Orange','Yellow','Green'};
@@ -117,6 +119,8 @@ loss_metrics=zeros(20);
 z=1;
 
 all_svm=zeros(20,total_nodes);
+all_svm_max=zeros(20,total_nodes);
+
 all_ann=zeros(20,total_nodes);
 all_actual=zeros(20,total_nodes);
 itr=1;
@@ -355,7 +359,6 @@ for k=1:4
         %Saving value to excel
         A=table(newArr_ann,'VariableNames',...
             {column_name});
-        filename = 'finalLabels.xlsx';
         writetable(A,filename,'Sheet',ann_sheet,'Range',mapping_columns(column_name));
         
         all_ann(itr,:)=newArr_ann;
@@ -400,48 +403,44 @@ for k=1:4
             newArr_svm=zeros(round(length(label)/5),1);
 
             j=1;
-            for i=1:3:length(label)-3
-                if label(i)==1 || label(i+1)==1 || label(i+2)==1 
+            for i=1:5:length(label)-5
+                if label(i)==1 || label(i+1)==1 || label(i+2)==1  || label(i+3)==1  || label(i+4)==1 
                     newArr_svm(j)=1;
                 end
                 j=j+1;
             end
-            newArr_svm=zeros(round(length(label_max)/3),1);
-            
+            newArr_svm=zeros(round(length(label_max)/5),1);
+            newArrmax_svm=zeros(round(length(label_max)/5),1);
+
             jj=1;
-            for i=1:3:length(label_max)-3
-                if label_max(i)==1 || label_max(i+1)==1 || label_max(i+2)==1 
+            for i=1:5:length(label_max)-5
+                if label_max(i)==1 || label_max(i+1)==1 || label_max(i+2)==1  || label_max(i+3)==1  || label_max(i+4)==1 
                     newArrmax_svm(jj)=1;
                 end
                 jj=jj+1;
             end
-            newArrmax_svm=zeros(round(length(label_max)/3),1);
 
             A=table(newArrmax_svm,'VariableNames',...
                 {column_name});
-            filename = 'finalLabels.xlsx';
             writetable(A,filename,'Sheet',svm_max_sheet,'Range',mapping_columns(column_name));
             
             A=table(newArr_svm,'VariableNames',...
                 {column_name});
-            filename = 'finalLabels.xlsx';
             writetable(A,filename,'Sheet',svm_sheet,'Range',mapping_columns(column_name));
             
             all_svm(itr,:)=newArr_svm;
+            all_svm_max(itr,:)=newArrmax_svm;
+
         else
             A=table(newArr_actual,'VariableNames',...
                 {column_name});
-            filename = 'finalLabels.xlsx';
             writetable(A,filename,'Sheet',svm_sheet,'Range',mapping_columns(column_name));
             all_svm(itr,:)=newArr_actual;
             
-            A=table(newArrmax_svm,'VariableNames',...
+            A=table(newArr_actual,'VariableNames',...
                 {column_name});
-            filename = 'finalLabels.xlsx';
             writetable(A,filename,'Sheet',svm_max_sheet,'Range',mapping_columns(column_name));
             
-            
-            all_svm_max(itr,:)=newArrmax_svm;
 
         end
         itr=itr+1;
@@ -657,7 +656,7 @@ matching=[[redsvm_acc,orangesvm_acc,yellowsvm_acc,greensvm_acc];[redann_acc,oran
 %Writing the accuracy to result_sheet of excel
 colors={'Red','Orange','Yellow','Green'};
 final_table=array2table(matching,'RowNames',headers,'VariableNames',colors);
-writetable(final_table,filename,'Sheet',7,'Range','B10','WriteRowNames',true);
+writetable(final_table,filename,'Sheet',result_sheet,'Range','B10','WriteRowNames',true);
 
 %%
 
