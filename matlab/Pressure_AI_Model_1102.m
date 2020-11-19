@@ -1,9 +1,9 @@
 %Load Data
-load Mymatrix_node_twentyonetomax.txt
-load Mymatrix_node_onetotwentyone.txt
+load Mymatrix_node.txt
+load Mymatrix_64node.txt
 
 % load Training Data
-X = abs(Mymatrix_node_onetotwentyone(:,1));
+X = abs(Mymatrix_64node(:,1));
 X_pressure= X(:,1);
 
 %load Anomaly Free Data
@@ -265,7 +265,7 @@ for k=1:4
 
         Ysvm_new=zeros(length(X_pressure),1);
         Ysvm_new(D)=1;
-        Xsvm_new = Mymatrix_node_onetotwentyone(:,1);
+        Xsvm_new = Mymatrix_node(:,1);
         
         %column_name corresponds to the name of column in Excel File
         column_name=strcat('A',num2str(5-k),'D',num2str(6-p));
@@ -299,7 +299,7 @@ for k=1:4
         %   for each of the cells of the matrix
         %2: Click on x(close), when done exploring.
         %NOTE: Popup occurs for each cell.
-        x = Mymatrix_node_onetotwentyone';
+        x = Mymatrix_64node';
 
         trainFcn = 'trainscg';  % Scaled conjugate gradient backpropagation.
 
@@ -384,8 +384,8 @@ for k=1:4
             ScoreSVMModel = fitSVMPosterior(SVMModel);
 
             ScoreTransform = CVSVMModel.ScoreTransform;
-            W = Mymatrix_node_onetotwentyone(:,1);
-            Z = Mymatrix_node_thirtyonetomax(:,1);
+            W = Mymatrix_node(:,1);
+            Z = Mymatrix_64node(:,1);
 
             [label,score] = predict(SVMModel,W);
             [label_max,score_max] = predict(SVMModel,Z);
