@@ -11,11 +11,44 @@ import math
 
 in2_ft2 = 0.0005787
 
+#toplevelpath = "/Users/kavyaub/Documents/mySubjects/ConEdison"
+toplevelpath = "/Users/aya/Documents/code-pfs/gas-nx"
+
+all_datadir = "/NYU_LeakData"
+
+def ask_user_path(pathinput, datadirinput):
+    ask_user_path_text = 'FilePath for Data is: ' + pathinput + datadirinput + ' OK? y / n '
+    response = 'y'
+    user_inputYN = input(ask_user_path_text)
+    if user_inputYN.lower() not in response:
+        new_input = 'PASTE FULL PATH TO YOUR DATA DIRECTORY HERE: '
+        newpath = input(new_input)
+        return newpath
+    elif user_inputYN in response:
+        response2 = pathinput + datadirinput
+        return response2
+
+#datadirpath = ask_user_path(toplevelpath, all_datadir)
+get_file_datadirpath = ask_user_path(toplevelpath, all_datadir)
+
+
+anomalyFreeNode = toplevelpath + all_datadir + "/LeakData_ZeroDegrees/NYU Anamoly Data_ZeroDeg_Nodes.csv"
+nodeArr=pd.read_csv(anomalyFreeNode)
+
+anomalyFree = toplevelpath + all_datadir + "/LeakData_ZeroDegrees/NYU Anamoly Data_ZeroDeg_Nodes.csv"
+nFile0=pd.read_csv(anomalyFree)
+
+anomaly = toplevelpath + all_datadir + "/LeakData_ZeroDegrees/NYU Anamoly Data_ZeroDeg_Nodes_Leak1.csv"
+nFile1=pd.read_csv(anomaly)
+
+def get_file(name):
+    anomaly = get_file_datadirpath+name
+    nFile=pd.read_csv(anomaly)
+    return nFile
+
 def pressDeviation(file0, file1):
     res_arr = file1
     res_arr['PressureDeviation']= file1.NodePressure
-    res_arr['FlowDeviation']= file1.NodeResultFlow
-    res_arr.FlowDeviation = abs(res_arr.NodeResultFlow.subtract(file0.NodeResultFlow))/file0.NodeResultFlow
     res_arr.PressureDeviation = abs(res_arr.PressureDeviation.subtract(file0.NodePressure))/file0.NodePressure
     return res_arr
 

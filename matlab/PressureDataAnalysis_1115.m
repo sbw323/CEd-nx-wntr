@@ -2,12 +2,12 @@
 %Click on "Import Data" to import the Pressure files for the 5 scenarios
 %Name of the files to be uploaded
 %Eg: NYUAnamolyDataZeroDegNodesLeak41 refers to file with leak value of 41
-degree41_nodes=NYUAnamolyData16DegNodesLeak41;
-degree31_nodes=NYUAnamolyData16DegNodesLeak31;
-degree21_nodes=NYUAnamolyData16DegNodesLeak21;
-degree11_nodes=NYUAnamolyData16DegNodesLeak11;
-degree1_nodes=NYUAnamolyData16DegNodesLeak1;
-anomaly_free_nodes=NYUAnamolyData16DegNodes;
+degree41_nodes=NYUAnamolyData32DegNodesLeak41;
+degree31_nodes=NYUAnamolyData32DegNodesLeak31;
+degree21_nodes=NYUAnamolyData32DegNodesLeak21;
+degree11_nodes=NYUAnamolyData32DegNodesLeak11;
+degree1_nodes=NYUAnamolyData32DegNodesLeak1;
+anomaly_free_nodes=NYUAnamolyData32DegNodes;
 %Name of file with 200 nodes
 nodes_200=CECnodes200TableToExcel;
 %%
@@ -113,7 +113,7 @@ end
 %Saving modified data to Mymatrix_node.txt
 %Use Mymatrix_node.txt as input for AI code
 
-fid = fopen('Mymatrix_64node.txt','wt');
+fid = fopen('Mymatrix_32node.txt','wt');
 for ii = 1:size(saved,1)
     fprintf(fid,'%g\t',saved(ii,:));
     fprintf(fid,'\n');
