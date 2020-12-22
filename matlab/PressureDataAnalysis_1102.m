@@ -2,12 +2,12 @@
 %Click on "Import Data" to import the Pressure files for the 5 scenarios
 %Name of the files to be uploaded
 %Eg: NYUAnamolyDataZeroDegNodesLeak41 refers to file with leak value of 41
-degree41_nodes=NYUAnamolyDataZeroDegNodesLeak41;
-degree31_nodes=NYUAnamolyDataZeroDegNodesLeak31;
-degree21_nodes=NYUAnamolyDataZeroDegNodesLeak21;
-degree11_nodes=NYUAnamolyDataZeroDegNodesLeak11;
-degree1_nodes=NYUAnamolyDataZeroDegNodesLeak1;
-anomaly_free_nodes=NYUAnamolyDataZeroDegNodes;
+degree41_nodes=NYUAnamolyData16DegNodesLeak41;
+degree31_nodes=NYUAnamolyData16DegNodesLeak31;
+degree21_nodes=NYUAnamolyData16DegNodesLeak21;
+degree11_nodes=NYUAnamolyData16DegNodesLeak11;
+degree1_nodes=NYUAnamolyData16DegNodesLeak1;
+anomaly_free_nodes=NYUAnamolyData16DegNodes;
 %Name of file with 200 nodes
 nodes_200=CECnodes200TableToExcel;
 %%
@@ -30,15 +30,15 @@ nodes_200=CECnodes200TableToExcel;
 %Reducing from 1000s of nodes to 200 nodes
 %for each scenario
 anomlay1_500_nodes=reducer(degree1_nodes,nodes_200);
-%anomlay11_500_nodes=reducer(degree11_nodes,nodes_200);
+anomlay11_500_nodes=reducer(degree11_nodes,nodes_200);
 anomlay21_500_nodes=reducer(degree21_nodes,nodes_200);
 anomlay31_500_nodes=reducer(degree31_nodes,nodes_200);
 anomlay41_500_nodes=reducer(degree41_nodes,nodes_200);
 anomaly_free_nodes_500=reducer(anomaly_free_nodes,nodes_200);
 
 %temps=[anomlay1_500_nodes.NodePressure,anomlay11_500_nodes.NodePressure,anomlay21_500_nodes.NodePressure];
-temps=[anomlay21_500_nodes.NodePressure,anomlay31_500_nodes.NodePressure,anomlay41_500_nodes.NodePressure];
-%temps=[anomlay1_500_nodes.NodePressure,anomlay11_500_nodes.NodePressure,anomlay21_500_nodes.NodePressure,anomlay31_500_nodes.NodePressure,anomlay41_500_nodes.NodePressure];
+%temps=[anomlay21_500_nodes.NodePressure,anomlay31_500_nodes.NodePressure,anomlay41_500_nodes.NodePressure];
+temps=[anomlay1_500_nodes.NodePressure,anomlay11_500_nodes.NodePressure,anomlay21_500_nodes.NodePressure,anomlay31_500_nodes.NodePressure,anomlay41_500_nodes.NodePressure];
 new_arr=temps;
 
 %Below code preprocesses data
@@ -53,15 +53,15 @@ for i=1:length(temps(:,1))
         new_arr(i,1)=maxs-new_arr(i,1);
         new_arr(i,2)=maxs-new_arr(i,2);
         new_arr(i,3)=maxs-new_arr(i,3);
-        %new_arr(i,4)=maxs-new_arr(i,4);
-        %new_arr(i,5)=maxs-new_arr(i,5);
+        new_arr(i,4)=maxs-new_arr(i,4);
+        new_arr(i,5)=maxs-new_arr(i,5);
     else
         if temps(i,1) == maxs
             new_arr(i,1)=0;
             new_arr(i,2)=temps(i,1)-new_arr(i,2);
             new_arr(i,3)=temps(i,1)-new_arr(i,3);
-            %new_arr(i,4)=temps(i,1)-new_arr(i,4);
-            %new_arr(i,5)=temps(i,1)-new_arr(i,5);
+            new_arr(i,4)=temps(i,1)-new_arr(i,4);
+            new_arr(i,5)=temps(i,1)-new_arr(i,5);
             
         elseif temps(i,2)==maxs
             new_arr(i,1)=0;
@@ -81,15 +81,15 @@ for i=1:length(temps(:,1))
             new_arr(i,1)=0;
             new_arr(i,2)=0;
             new_arr(i,3)=0;
-            %new_arr(i,4)=0;
+            new_arr(i,4)=0;
 %           new_arr(i,5)=new_arr(i,5)-temps(i,4);
             
         else
             new_arr(i,1)=0;
             new_arr(i,2)=0;
             new_arr(i,3)=0;
-            %new_arr(i,4)=0;
-            %new_arr(i,5)=0;
+            new_arr(i,4)=0;
+            new_arr(i,5)=0;
         
         end
     end
@@ -107,15 +107,15 @@ for i=1:3:(length(anomlay1_500_nodes.NAME)*3)
     saved(i)=new_arr(j,1);
     saved(i+1)=new_arr(j,2);
     saved(i+2)=new_arr(j,3);
-    %saved(i+3)=new_arr(j,4);
-    %saved(i+4)=new_arr(j,5);
+    saved(i+3)=new_arr(j,4);
+    saved(i+4)=new_arr(j,5);
     j=j+1;
 end
 
 %Saving modified data to Mymatrix_node.txt
 %Use Mymatrix_node.txt as input for AI code
 
-fid = fopen('Mymatrix_node_three.txt','wt');
+fid = fopen('Mymatrix_16node_1220.txt','wt');
 for ii = 1:size(saved,1)
     fprintf(fid,'%g\t',saved(ii,:));
     fprintf(fid,'\n');
