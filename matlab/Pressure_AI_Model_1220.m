@@ -1,8 +1,8 @@
 %Load Data
-load Mymatrix_32node.txt
+load Mymatrix_16node.txt
 
 % load Training Data
-X = abs(Mymatrix_32node(:,1)); 
+X = abs(Mymatrix_16node(:,1)); 
 X_pressure= X(:,1);
 
 %load Anomaly Free Data
@@ -95,7 +95,7 @@ result_sheet=7;
 comparison_sheet=10;
 
 %Name of file to save the data to
-filename = 'finalLabels1220.xlsx';
+filename = 'finalLabels1225.xlsx';
 
 %Map of columns to excel column name
 keySet = {'A4D5','A4D4','A4D3','A4D2','A4D1','A3D5','A3D4','A3D3','A3D2','A3D1','A2D5','A2D4','A2D3','A2D2','A2D1','A1D5','A1D4','A1D3','A1D2','A1D1','Red','Orange','Yellow','Green'};
@@ -253,7 +253,7 @@ for k=1:4
 
         Ysvm_new=zeros(length(X_pressure),1);
         Ysvm_new(D)=1;
-        Xsvm_new = Mymatrix_32node(:,1);
+        Xsvm_new = Mymatrix_16node(:,1);
         
         %column_name corresponds to the name of column in Excel File
         column_name=strcat('A',num2str(5-k),'D',num2str(6-p));
@@ -287,7 +287,7 @@ for k=1:4
         %   for each of the cells of the matrix
         %2: Click on x(close), when done exploring.
         %NOTE: Popup occurs for each cell.
-        x = Mymatrix_32node';
+        x = Mymatrix_16node';
 
         trainFcn = 'trainscg';  % Scaled conjugate gradient backpropagation.
 
@@ -347,7 +347,7 @@ for k=1:4
         %Saving value to excel
         A=table(newArr_ann,'VariableNames',...
             {column_name});
-        filename = 'finalLabels1220.xlsx';
+        filename = 'finalLabels1225.xlsx';
         writetable(A,filename,'Sheet',ann_sheet,'Range',mapping_columns(column_name));
         
         all_ann(itr,:)=newArr_ann;
@@ -373,7 +373,7 @@ for k=1:4
             ScoreSVMModel = fitSVMPosterior(SVMModel);
 
             ScoreTransform = CVSVMModel.ScoreTransform;
-            W = Mymatrix_32node(:,1);
+            W = Mymatrix_16node(:,1);
 
             [label,score] = predict(SVMModel,W);
             Sc=nonzeros(label);
@@ -395,14 +395,14 @@ for k=1:4
 
             A=table(newArr_svm,'VariableNames',...
                 {column_name});
-            filename = 'finalLabels1220.xlsx';
+            filename = 'finalLabels1225.xlsx';
             writetable(A,filename,'Sheet',svm_sheet,'Range',mapping_columns(column_name));
             
             all_svm(itr,:)=newArr_svm;
         else
             A=table(newArr_actual,'VariableNames',...
                 {column_name});
-            filename = 'finalLabels1220.xlsx';
+            filename = 'finalLabels1225.xlsx';
             writetable(A,filename,'Sheet',svm_sheet,'Range',mapping_columns(column_name));
             all_svm(itr,:)=newArr_actual;
         end
