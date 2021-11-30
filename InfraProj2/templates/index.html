@@ -1,0 +1,30 @@
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/IndexPage.css') }}">
+</head>
+<body>
+Hi Rinkal
+<div class="flashes">
+  {% for category, message in get_flashed_messages(with_categories = True)%}
+    <div>
+        {{ category }}: {{ message }}
+    </div>
+  {% endfor %}
+</div>
+
+    <form method="post" action="/" enctype="multipart/form-data">
+    <dl>
+    <p>
+    <input type="file" name="files[]" multiple="true" autocomplete="off" required>
+    </p>
+    </dl>
+    <p>
+    <input type="submit" value="Submit">
+    </p>
+
+</form>
+</body>
+</html>

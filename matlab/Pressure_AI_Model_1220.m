@@ -95,7 +95,7 @@ result_sheet=7;
 comparison_sheet=10;
 
 %Name of file to save the data to
-filename = 'finalLabels1225.xlsx';
+filename = 'finalLabels1230-16-p.xlsx';
 
 %Map of columns to excel column name
 keySet = {'A4D5','A4D4','A4D3','A4D2','A4D1','A3D5','A3D4','A3D3','A3D2','A3D1','A2D5','A2D4','A2D3','A2D2','A2D1','A1D5','A1D4','A1D3','A1D2','A1D1','Red','Orange','Yellow','Green'};
@@ -347,7 +347,7 @@ for k=1:4
         %Saving value to excel
         A=table(newArr_ann,'VariableNames',...
             {column_name});
-        filename = 'finalLabels1225.xlsx';
+        filename = 'finalLabels1230-16-p.xlsx';
         writetable(A,filename,'Sheet',ann_sheet,'Range',mapping_columns(column_name));
         
         all_ann(itr,:)=newArr_ann;
@@ -395,14 +395,14 @@ for k=1:4
 
             A=table(newArr_svm,'VariableNames',...
                 {column_name});
-            filename = 'finalLabels1225.xlsx';
+            filename = 'finalLabels1230-16-p.xlsx';
             writetable(A,filename,'Sheet',svm_sheet,'Range',mapping_columns(column_name));
             
             all_svm(itr,:)=newArr_svm;
         else
             A=table(newArr_actual,'VariableNames',...
                 {column_name});
-            filename = 'finalLabels1225.xlsx';
+            filename = 'finalLabels1230-16-p.xlsx';
             writetable(A,filename,'Sheet',svm_sheet,'Range',mapping_columns(column_name));
             all_svm(itr,:)=newArr_actual;
         end
